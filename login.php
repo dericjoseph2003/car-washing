@@ -4,27 +4,40 @@ session_start();
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     require 'conn.php'; // Include database connection
 
-    $username = htmlspecialchars(trim($_POST['username']));
+    $email = htmlspecialchars(trim($_POST['email']));
     $password = htmlspecialchars(trim($_POST['password']));
 
-    // Fetch user data
-    $stmt = $conn->prepare("SELECT * FROM users WHERE Username = ?");
-    $stmt->bind_param("s", $username);
+    // Admin credentials (Hardcoded)
+    $admin_email = "admin@example.com";
+    $admin_password = "Admin@123"; // Store a hashed password for better security
+
+    // Check if the login is for admin
+    if ($email === $admin_email && $password === $admin_password) {
+        $_SESSION['username'] = "Admin";
+        $_SESSION['role'] = "admin";
+        header("Location: admindash.html"); // Redirect to admin panel
+        exit;
+    }
+
+    // Fetch user data from the database
+    $stmt = $conn->prepare("SELECT * FROM users WHERE Email = ?");
+    $stmt->bind_param("s", $email);
     $stmt->execute();
     $result = $stmt->get_result();
     $user = $result->fetch_assoc();
 
     if ($user && password_verify($password, $user['PasswordHash'])) {
         $_SESSION['username'] = $user['Username'];
-        header("Location: index.php"); // Redirect to dashboard
+        $_SESSION['role'] = "user";
+        header("Location: index.php"); // Redirect to user dashboard
         exit;
     } else {
-        // Redirect back to login with error
         header("Location: login.php?error=user_not_found");
         exit;
     }
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -250,9 +263,38 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             font-size: 0.95rem;
             border: 1px solid #ffe0e0;
         }
+
+        /* Add these new styles */
+        .home-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 10px 20px;
+            border-radius: 12px;
+            color: #1B2133;
+            font-size: 0.95rem;
+            font-weight: 500;
+            text-decoration: none;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .home-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
     </style>
 </head>
 <body>
+    <a href="index.php" class="home-button">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L2 8.207V13.5A1.5 1.5 0 0 0 3.5 15h9a1.5 1.5 0 0 0 1.5-1.5V8.207l.646.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.707 1.5ZM13 7.207V13.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V7.207l5-5 5 5Z"/>
+        </svg>
+    </a>
+    
     <?php if(isset($_SESSION['username'])): ?>
         <div class="user-info">
             Welcome, <?php echo htmlspecialchars($_SESSION['username']); ?>
@@ -273,7 +315,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         <form class="loginform" action="login.php" method="POST">
             <div>
-                <input type="text" name="username" placeholder="Username" required>
+                <input type="text" name= "email" placeholder="email" required>
             </div>
             <div>
                 <input type="password" name="password" placeholder="Password" required>
@@ -281,7 +323,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <button type="submit" class="login-button">Sign In</button>
         </form>
         <div class="forgot-password">
-            <a href="/forgot-password">Forgot Password?</a>
+            <a href="forgot_pasword.php">Forgot Password?</a>
         </div>
         <div class="social-login">
             <p>Or continue with</p>

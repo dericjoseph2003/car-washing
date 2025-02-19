@@ -342,7 +342,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </div>
         <form id="signupForm" action="" method="POST">
             <div class="input-group">
-                <label for="signup-username">Username</label>
+                <label for="signup-username">Name</label>
                 <input type="text" id="signup-username" name="username" required>
                 <span id="username-error" class="error-text"></span>
             </div>
@@ -367,7 +367,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             <button type="submit" class="signup-btn">Create Account</button>
         </form>
-/
+
         <div class="login-link">
             <a href="login.php">Already have an account? Sign In</a>
         </div>
@@ -416,11 +416,35 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 emailError.textContent = 'Please enter a valid email address';
                 emailError.style.display = 'block';
                 email.classList.add('error');
+                email.classList.remove('success');
             } else {
-                emailError.textContent = '';
-                emailError.style.display = 'none';
-                email.classList.remove('error');
-                email.classList.add('success');
+                // AJAX request to check if email exists
+                fetch('check_email.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: 'email=' + encodeURIComponent(email.value)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.exists) {
+                        emailError.textContent = 'This email is already registered';
+                        emailError.style.display = 'block';
+                        email.classList.add('error');
+                        email.classList.remove('success');
+                    } else {
+                        emailError.textContent = '';
+                        emailError.style.display = 'none';
+                        email.classList.remove('error');
+                        email.classList.add('success');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    emailError.textContent = 'Error checking email availability';
+                    emailError.style.display = 'block';
+                });
             }
         });
 

@@ -131,7 +131,7 @@ session_start();
                             <a href="contact.html" class="nav-item nav-link">Contact</a>
                         </div>
                         <div class="ml-auto">
-                            <a class="btn btn-custom" href="#">Get Appointment</a>
+                            <a class="btn btn-custom" href="#price">Get Appointment</a>
                         </div>
                     </div>
                 </nav>
@@ -294,7 +294,7 @@ session_start();
         
       
         <!-- Price Start -->
-        <div class="price">
+        <div class="price" id="price">
             <div class="container">
                 <div class="section-header text-center">
                     <p>Washing Plan</p>
@@ -317,7 +317,7 @@ session_start();
                                 </ul>
                             </div>
                             <div class="price-footer">
-                                <a class="btn btn-custom" href="">Book Now</a>
+                                <a class="btn btn-custom" href="booking.php">Book Now</a>
                             </div>
                         </div>
                     </div>
@@ -337,27 +337,27 @@ session_start();
                                 </ul>
                             </div>
                             <div class="price-footer">
-                                <a class="btn btn-custom" href="">Book Now</a>
+                                <a class="btn btn-custom" href="booking.php">Book Now</a>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="price-item">
                             <div class="price-header">
-                                <h3>Complex Cleaning</h3>
+                                <h3>Detailing Services</h3>
                                 <h2><span>$</span><strong>49</strong><span>.99</span></h2>
                             </div>
                             <div class="price-body">
                                 <ul>
-                                    <li><i class="far fa-check-circle"></i>Seats Washing</li>
-                                    <li><i class="far fa-check-circle"></i>Vacuum Cleaning</li>
-                                    <li><i class="far fa-check-circle"></i>Exterior Cleaning</li>
-                                    <li><i class="far fa-check-circle"></i>Interior Wet Cleaning</li>
-                                    <li><i class="far fa-check-circle"></i>Window Wiping</li>
+                                    <li><i class="far fa-check-circle"></i>Full Car Detailing Package</li>
+                                    <li><i class="far fa-check-circle"></i>Engine Bay Detailing –</li>
+                                    <li><i class="far fa-check-circle"></i>Leather Seat Conditioning</li>
+                                    <li><i class="far fa-check-circle"></i>Dashboard & Trim Restoration</li>
+                                    <li><i class="far fa-check-circle"></i>Tire & Alloy Detailing</li>
                                 </ul>
                             </div>
                             <div class="price-footer">
-                                <a class="btn btn-custom" href="">Book Now</a>
+                                <a class="btn btn-custom" href="booking.php">Book Now</a>
                             </div>
                         </div>
                     </div>
