@@ -371,7 +371,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <div class="login-link">
             <a href="login.php">Already have an account? Sign In</a>
         </div>
-        <div class="social-login">
+        <!-- <div class="social-login">
             <p>Or continue with</p>
             <div class="social-icons">
                 <a href="#" title="Register with Google">
@@ -384,7 +384,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" alt="Apple">
                 </a>
             </div>
-        </div>
+        </div> -->
     </div>
      <script>
         const username = document.getElementById('signup-username');

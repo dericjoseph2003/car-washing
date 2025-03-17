@@ -15,11 +15,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($email === $admin_email && $password === $admin_password) {
         $_SESSION['username'] = "Admin";
         $_SESSION['role'] = "admin";
-        header("Location: admindash.html"); // Redirect to admin panel
+        header("Location: admindash.php");
         exit;
     }
 
-    // Fetch user data from the database
+    // Check staff login first
+    $stmt = $conn->prepare("SELECT * FROM staff WHERE email = ? AND active = 1");
+    $stmt->bind_param("s", $email);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $staff = $result->fetch_assoc();
+
+    if ($staff && password_verify($password, $staff['password'])) {
+        $_SESSION['username'] = $staff['name'];
+        $_SESSION['role'] = $staff['role'];
+        $_SESSION['staff_id'] = $staff['id'];
+        header("Location: staffdash.php");
+        exit;
+    }
+
+    // If not staff, check regular user
     $stmt = $conn->prepare("SELECT * FROM users WHERE Email = ?");
     $stmt->bind_param("s", $email);
     $stmt->execute();
@@ -29,10 +44,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($user && password_verify($password, $user['PasswordHash'])) {
         $_SESSION['username'] = $user['Username'];
         $_SESSION['role'] = "user";
-        header("Location: index.php"); // Redirect to user dashboard
+        header("Location: index.php");
         exit;
     } else {
-        header("Location: login.php?error=user_not_found");
+        header("Location: login.php?error=invalid_credentials");
         exit;
     }
 }
@@ -307,25 +322,29 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <p>Welcome back! Please login to continue.</p>
         </div>
 
-        <?php if (isset($_GET['error']) && $_GET['error'] == 'user_not_found'): ?>
+        <?php if (isset($_GET['error']) && $_GET['error'] == 'invalid_credentials'): ?>
             <div class="error-message" style="color: #ff3333; text-align: center; margin-bottom: 1rem;">
-                User not found. Please check your credentials and try again.
+                Invalid credentials. Please check your email and password and try again.
             </div>
         <?php endif; ?>
 
         <form class="loginform" action="login.php" method="POST">
             <div>
-                <input type="text" name= "email" placeholder="email" required>
+                <input type="text" name="email" id="emailInput" placeholder="Email" required 
+                    oninput="validateEmail(this)" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$">
+                <span id="emailError" style="color: #ff3333; font-size: 0.8rem; display: none; margin-top: 5px;"></span>
             </div>
             <div>
-                <input type="password" name="password" placeholder="Password" required>
+                <input type="password" name="password" id="passwordInput" placeholder="Password" required 
+                    oninput="validatePassword(this)" minlength="6">
+                <span id="passwordError" style="color: #ff3333; font-size: 0.8rem; display: none; margin-top: 5px;"></span>
             </div>
             <button type="submit" class="login-button">Sign In</button>
         </form>
         <div class="forgot-password">
             <a href="forgot_pasword.php">Forgot Password?</a>
         </div>
-        <div class="social-login">
+        <!-- <div class="social-login">
             <p>Or continue with</p>
             <div class="social-icons">
                 <a href="#" title="Login with Google">
@@ -338,7 +357,41 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" alt="Apple">
                 </a>
             </div>
-        </div>
+        </div> -->
     </div>
+    <script>
+        function validateEmail(input) {
+            const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+            const errorElement = document.getElementById('emailError');
+            
+            if (input.value.length === 0) {
+                errorElement.style.display = 'none';
+                input.style.borderColor = '#e1e1e1';
+            } else if (!emailRegex.test(input.value)) {
+                errorElement.textContent = 'Please enter a valid email address';
+                errorElement.style.display = 'block';
+                input.style.borderColor = '#ff3333';
+            } else {
+                errorElement.style.display = 'none';
+                input.style.borderColor = '#4CAF50';
+            }
+        }
+
+        function validatePassword(input) {
+            const errorElement = document.getElementById('passwordError');
+            
+            if (input.value.length === 0) {
+                errorElement.style.display = 'none';
+                input.style.borderColor = '#e1e1e1';
+            } else if (input.value.length < 6) {
+                errorElement.textContent = 'Password must be at least 6 characters long';
+                errorElement.style.display = 'block';
+                input.style.borderColor = '#ff3333';
+            } else {
+                errorElement.style.display = 'none';
+                input.style.borderColor = '#4CAF50';
+            }
+        }
+    </script>
 </body>
 </html>

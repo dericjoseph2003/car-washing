@@ -31,8 +31,8 @@
                 <div class="row align-items-center">
                     <div class="col-lg-4 col-md-12">
                         <div class="logo">
-                            <a href="index.html">
-                                <h1>Auto<span>Wash</span></h1>
+                            <a href="index.php">
+                                <h1>Car<span>Care</span></h1>
                                 <!-- <img src="img/logo.jpg" alt="Logo"> -->
                             </a>
                         </div>
@@ -90,21 +90,21 @@
 
                     <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
                         <div class="navbar-nav mr-auto">
-                            <a href="index.html" class="nav-item nav-link">Home</a>
-                            <a href="about.html" class="nav-item nav-link">About</a>
-                            <a href="service.html" class="nav-item nav-link active">Service</a>
-                            <a href="price.html" class="nav-item nav-link">Price</a>
-                            <a href="location.html" class="nav-item nav-link">Washing Points</a>
+                            <a href="index.php" class="nav-item nav-link">Home</a>
+                            <a href="about.php" class="nav-item nav-link">About</a>
+                            <a href="service.php" class="nav-item nav-link">Service</a>
+                            <a href="price.php" class="nav-item nav-link">Price</a>
+                            <a href="location.php" class="nav-item nav-link">Washing Points</a>
                             <div class="nav-item dropdown">
                                 <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Pages</a>
                                 <div class="dropdown-menu">
-                                    <a href="blog.html" class="dropdown-item">Blog Grid</a>
-                                    <a href="single.html" class="dropdown-item">Detail Page</a>
-                                    <a href="team.html" class="dropdown-item">Team Member</a>
-                                    <a href="booking.html" class="dropdown-item">Schedule Booking</a>
+                                    <a href="blog.php" class="dropdown-item">Blog Grid</a>
+                                    <a href="single.php" class="dropdown-item">Detail Page</a>
+                                    <a href="team.php" class="dropdown-item">Team Member</a>
+                                    <a href="booking.php" class="dropdown-item">Schedule Booking</a>
                                 </div>
                             </div>
-                            <a href="contact.html" class="nav-item nav-link">Contact</a>
+                            <a href="contact.php" class="nav-item nav-link active">Contact</a>
                         </div>
                         <div class="ml-auto">
                             <a class="btn btn-custom" href="#">Get Appointment</a>
@@ -121,11 +121,11 @@
             <div class="container">
                 <div class="row">
                     <div class="col-12">
-                        <h2>Service</h2>
+                        <h2>Contact Us</h2>
                     </div>
                     <div class="col-12">
                         <a href="">Home</a>
-                        <a href="">Service</a>
+                        <a href="">Contact</a>
                     </div>
                 </div>
             </div>
@@ -133,128 +133,79 @@
         <!-- Page Header End -->
         
         
-        <!-- Service Start -->
-        <div class="service">
+        <!-- Contact Start -->
+        <div class="contact">
             <div class="container">
                 <div class="section-header text-center">
-                    <p>What We Do?</p>
-                    <h2>Premium Washing Services</h2>
+                    <p>Get In Touch</p>
+                    <h2>Contact for any query</h2>
                 </div>
                 <div class="row">
-                    <div class="col-lg-3 col-md-6">
-                        <div class="service-item">
-                            <i class="flaticon-car-wash-1"></i>
-                            <h3>Exterior Washing</h3>
-                            <p>Lorem ipsum dolor sit amet elit. Phase nec preti facils ornare velit non metus tortor</p>
+                    <div class="col-md-4">
+                        <div class="contact-info">
+                            <h2>Quick Contact Info</h2>
+                            <div class="contact-info-item">
+                                <div class="contact-info-icon">
+                                    <i class="far fa-clock"></i>
+                                </div>
+                                <div class="contact-info-text">
+                                    <h3>Opening Hour</h3>
+                                    <p>Mon - Fri, 8:00 - 8:00</p>
+                                </div>
+                            </div>
+                            <div class="contact-info-item">
+                                <div class="contact-info-icon">
+                                    <i class="fa fa-phone-alt"></i>
+                                </div>
+                                <div class="contact-info-text">
+                                    <h3>Call Us</h3>
+                                    <p>+012 345 6789</p>
+                                </div>
+                            </div>
+                            <div class="contact-info-item">
+                                <div class="contact-info-icon">
+                                    <i class="far fa-envelope"></i>
+                                </div>
+                                <div class="contact-info-text">
+                                    <h3>Email Us</h3>
+                                    <p>info@example.com</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="col-lg-3 col-md-6">
-                        <div class="service-item">
-                            <i class="flaticon-car-wash"></i>
-                            <h3>Interior Washing</h3>
-                            <p>Lorem ipsum dolor sit amet elit. Phase nec preti facils ornare velit non metus tortor</p>
+                    <div class="col-md-7">
+                        <div class="contact-form">
+                            <div id="success"></div>
+                            <form name="sentMessage" id="contactForm" method="POST" action="process_contact.php" novalidate>
+                                <div class="control-group">
+                                    <input type="text" class="form-control" id="name" name="name" placeholder="Your Name" required="required" />
+                                    <p class="help-block text-danger"></p>
+                                </div>
+                                <div class="control-group">
+                                    <input type="email" class="form-control" id="email" name="email" placeholder="Your Email" required="required" />
+                                    <p class="help-block text-danger"></p>
+                                </div>
+                                <div class="control-group">
+                                    <input type="text" class="form-control" id="subject" name="subject" placeholder="Subject" required="required" />
+                                    <p class="help-block text-danger"></p>
+                                </div>
+                                <div class="control-group">
+                                    <textarea class="form-control" id="message" name="message" placeholder="Message" required="required"></textarea>
+                                    <p class="help-block text-danger"></p>
+                                </div>
+                                <div>
+                                    <button class="btn btn-custom" type="submit" id="sendMessageButton">Send Message</button>
+                                </div>
+                            </form>
                         </div>
                     </div>
-                    <div class="col-lg-3 col-md-6">
-                        <div class="service-item">
-                            <i class="flaticon-vacuum-cleaner"></i>
-                            <h3>Vacuum Cleaning</h3>
-                            <p>Lorem ipsum dolor sit amet elit. Phase nec preti facils ornare velit non metus tortor</p>
-                        </div>
-                    </div>
-                    <div class="col-lg-3 col-md-6">
-                        <div class="service-item">
-                            <i class="flaticon-seat"></i>
-                            <h3>Seats Washing</h3>
-                            <p>Lorem ipsum dolor sit amet elit. Phase nec preti facils ornare velit non metus tortor</p>
-                        </div>
-                    </div>
-                    <div class="col-lg-3 col-md-6">
-                        <div class="service-item">
-                            <i class="flaticon-car-service"></i>
-                            <h3>Window Wiping</h3>
-                            <p>Lorem ipsum dolor sit amet elit. Phase nec preti facils ornare velit non metus tortor</p>
-                        </div>
-                    </div>
-                    <div class="col-lg-3 col-md-6">
-                        <div class="service-item">
-                            <i class="flaticon-car-service-2"></i>
-                            <h3>Wet Cleaning</h3>
-                            <p>Lorem ipsum dolor sit amet elit. Phase nec preti facils ornare velit non metus tortor</p>
-                        </div>
-                    </div>
-                    <div class="col-lg-3 col-md-6">
-                        <div class="service-item">
-                            <i class="flaticon-car-wash"></i>
-                            <h3>Oil Changing</h3>
-                            <p>Lorem ipsum dolor sit amet elit. Phase nec preti facils ornare velit non metus tortor</p>
-                        </div>
-                    </div>
-                    <div class="col-lg-3 col-md-6">
-                        <div class="service-item">
-                            <i class="flaticon-brush-1"></i>
-                            <h3>Brake Reparing</h3>
-                            <p>Lorem ipsum dolor sit amet elit. Phase nec preti facils ornare velit non metus tortor</p>
-                        </div>
-                    </div>
+                    <!-- <div class="col-md-12">
+                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3001156.4288297426!2d-78.01371936852176!3d42.72876761954724!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4ccc4bf0f123a5a9%3A0xddcfc6c1de189567!2sNew%20York%2C%20USA!5e0!3m2!1sen!2sbd!4v1600663868074!5m2!1sen!2sbd" frameborder="0" style="border:0;" allowfullscreen="" aria-hidden="false" tabindex="0"></iframe>
+                    </div> -->
                 </div>
             </div>
         </div>
-        <!-- Service End -->
-        
-        
-        <!-- Testimonial Start -->
-        <div class="testimonial">
-            <div class="container">
-                <div class="section-header text-center">
-                    <p>Testimonial</p>
-                    <h2>What our clients say</h2>
-                </div>
-                <div class="owl-carousel testimonials-carousel">
-                    <div class="testimonial-item">
-                        <img src="img/testimonial-1.jpg" alt="Image">
-                        <div class="testimonial-text">
-                            <h3>Client Name</h3>
-                            <h4>Profession</h4>
-                            <p>
-                                Lorem ipsum dolor sit amet elit. Phasel preti mi facilis ornare velit non vulputa. Aliqu metus tortor auctor gravid
-                            </p>
-                        </div>
-                    </div>
-                    <div class="testimonial-item">
-                        <img src="img/testimonial-2.jpg" alt="Image">
-                        <div class="testimonial-text">
-                            <h3>Client Name</h3>
-                            <h4>Profession</h4>
-                            <p>
-                                Lorem ipsum dolor sit amet elit. Phasel preti mi facilis ornare velit non vulputa. Aliqu metus tortor auctor gravid
-                            </p>
-                        </div>
-                    </div>
-                    <div class="testimonial-item">
-                        <img src="img/testimonial-3.jpg" alt="Image">
-                        <div class="testimonial-text">
-                            <h3>Client Name</h3>
-                            <h4>Profession</h4>
-                            <p>
-                                Lorem ipsum dolor sit amet elit. Phasel preti mi facilis ornare velit non vulputa. Aliqu metus tortor auctor gravid
-                            </p>
-                        </div>
-                    </div>
-                    <div class="testimonial-item">
-                        <img src="img/testimonial-4.jpg" alt="Image">
-                        <div class="testimonial-text">
-                            <h3>Client Name</h3>
-                            <h4>Profession</h4>
-                            <p>
-                                Lorem ipsum dolor sit amet elit. Phasel preti mi facilis ornare velit non vulputa. Aliqu metus tortor auctor gravid
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- Testimonial End -->
+        <!-- Contact End -->
 
 
         <!-- Footer Start -->
@@ -309,7 +260,7 @@
                 </div>
             </div>
             <div class="container copyright">
-                <p>&copy; <a href="#">Your Site Name</a>, All Right Reserved. Designed By <a href="https://htmlcodex.com">HTML Codex</a></p>
+                <p>&copy; <a href="#">Your Site Name</a>, All Right Reserved. Designed By <a href="https://phpcodex.com">php Codex</a></p>
             </div>
         </div>
         <!-- Footer End -->
@@ -330,11 +281,28 @@
         <script src="lib/waypoints/waypoints.min.js"></script>
         <script src="lib/counterup/counterup.min.js"></script>
         
-        <!-- Contact Javascript File -->
-        <script src="mail/jqBootstrapValidation.min.js"></script>
-        <script src="mail/contact.js"></script>
-
         <!-- Template Javascript -->
         <script src="js/main.js"></script>
+        <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check for URL parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const status = urlParams.get('status');
+            
+            if (status === 'success') {
+                document.getElementById('success').innerHTML = 
+                    '<div class="alert alert-success">' +
+                    '<button type="button" class="close" data-dismiss="alert">&times;</button>' +
+                    '<strong>Your message has been sent successfully!</strong>' +
+                    '</div>';
+            } else if (status === 'error') {
+                document.getElementById('success').innerHTML = 
+                    '<div class="alert alert-danger">' +
+                    '<button type="button" class="close" data-dismiss="alert">&times;</button>' +
+                    '<strong>Sorry, there was an error sending your message. Please try again.</strong>' +
+                    '</div>';
+            }
+        });
+        </script>
     </body>
 </html>

@@ -39,7 +39,7 @@ session_start();
                 <div class="row align-items-center">
                     <div class="col-lg-4 col-md-12">
                         <div class="logo">
-                            <a href="index.html">
+                            <a href="index.php">
                                 <h1>Car<span>Care</span></h1>
                                 <!-- <img src="img/logo.jpg" alt="Logo"> -->
                             </a>
@@ -108,7 +108,11 @@ session_start();
                                 echo '<div class="nav-item dropdown">';
                                 echo '<a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">' . htmlspecialchars($_SESSION['username']) . '</a>';
                                 echo '<div class="dropdown-menu">';
-                                echo '<a href="profile.php" class="dropdown-item">My Profile</a>';
+                                if(isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
+                                    echo '<a href="admindash.php" class="dropdown-item">Admin Dashboard</a>';
+                                } else {
+                                    echo '<a href="profile.php" class="dropdown-item">My Profile</a>';
+                                }
                                 echo '<a href="logout.php" class="dropdown-item">Logout</a>';
                                 echo '</div>';
                                 echo '</div>';
@@ -128,7 +132,7 @@ session_start();
                                     <a href="#" class="dropdown-item">Schedule Booking</a>
                                 </div>
                             </div>
-                            <a href="contact.html" class="nav-item nav-link">Contact</a>
+                            <a href="contact.php" class="nav-item nav-link">Contact</a>
                         </div>
                         <div class="ml-auto">
                             <a class="btn btn-custom" href="#price">Get Appointment</a>

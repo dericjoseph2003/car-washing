@@ -118,7 +118,7 @@ mysqli_close($conn);
                         <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#editProfileModal">Edit Profile</button>
                         </a>
                         
-                        <a href="book_service.php" class="btn btn-success">Book New Service</a>
+                        <!-- <a href="book_service.php" class="btn btn-success">Book New Service</a> -->
                         <a href="change_password.php">
                         <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#changePasswordModal">Change Password</button>
 

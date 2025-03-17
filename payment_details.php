@@ -1,5 +1,5 @@
 <?php
-// config.php - Database configuration
+// Database configuration
 $servername = "localhost";
 $username = "root";
 $password = "";
@@ -13,52 +13,103 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Contact messages count
-$contact_messages = 0;
-$sql = "SELECT COUNT(*) as contact_count FROM contact_messages";
+// Get payment statistics with proper NULL handling and formatting
+$total_payments = 0;
+$total_amount = 0;
+$sql = "SELECT 
+    COUNT(*) as total_payments,
+    SUM(CASE 
+        WHEN payment_amount IS NOT NULL AND payment_amount > 0 THEN payment_amount 
+        ELSE CASE service_type
+            WHEN 'basic_wash' THEN (CASE vehicle_type 
+                WHEN 'Sedan' THEN 400 
+                WHEN 'SUV' THEN 500 
+                WHEN 'Hatchback' THEN 350 END)
+            WHEN 'basic_interior' THEN (CASE vehicle_type 
+                WHEN 'Sedan' THEN 600 
+                WHEN 'SUV' THEN 700 
+                WHEN 'Hatchback' THEN 500 END)
+            WHEN 'exterior_washing' THEN (CASE vehicle_type 
+                WHEN 'Sedan' THEN 800 
+                WHEN 'SUV' THEN 1000 
+                WHEN 'Hatchback' THEN 700 END)
+            WHEN 'interior_washing' THEN (CASE vehicle_type 
+                WHEN 'Sedan' THEN 1000 
+                WHEN 'SUV' THEN 1200 
+                WHEN 'Hatchback' THEN 900 END)
+        END END) as total_amount 
+    FROM booking 
+    WHERE payment_status = 'completed'";
 $result = $conn->query($sql);
 if ($result && $result->num_rows > 0) {
     $row = $result->fetch_assoc();
-    $contact_messages = $row['contact_count'];
+    $total_payments = $row['total_payments'];
+    $total_amount = $row['total_amount'];
 }
 
-// Initialize statistics with error handling
-// Total bookings
-$total_bookings = 0;
-$sql = "SELECT COUNT(*) as total_bookings FROM booking";
+// Get today's payments with proper NULL handling
+$today_payments = 0;
+$today_amount = 0;
+$sql = "SELECT 
+    COUNT(*) as today_payments,
+    SUM(CASE 
+        WHEN payment_amount IS NOT NULL AND payment_amount > 0 THEN payment_amount 
+        ELSE CASE service_type
+            WHEN 'basic_wash' THEN (CASE vehicle_type 
+                WHEN 'Sedan' THEN 400 
+                WHEN 'SUV' THEN 500 
+                WHEN 'Hatchback' THEN 350 END)
+            WHEN 'basic_interior' THEN (CASE vehicle_type 
+                WHEN 'Sedan' THEN 600 
+                WHEN 'SUV' THEN 700 
+                WHEN 'Hatchback' THEN 500 END)
+            WHEN 'exterior_washing' THEN (CASE vehicle_type 
+                WHEN 'Sedan' THEN 800 
+                WHEN 'SUV' THEN 1000 
+                WHEN 'Hatchback' THEN 700 END)
+            WHEN 'interior_washing' THEN (CASE vehicle_type 
+                WHEN 'Sedan' THEN 1000 
+                WHEN 'SUV' THEN 1200 
+                WHEN 'Hatchback' THEN 900 END)
+        END END) as today_amount 
+    FROM booking 
+    WHERE payment_status = 'completed' 
+    AND DATE(payment_date) = CURDATE()";
 $result = $conn->query($sql);
 if ($result && $result->num_rows > 0) {
     $row = $result->fetch_assoc();
-    $total_bookings = $row['total_bookings'];
+    $today_payments = $row['today_payments'];
+    $today_amount = $row['today_amount'];
 }
 
-// Pending bookings
-$pending_bookings = 0;
-$sql = "SELECT COUNT(*) as pending_bookings FROM booking WHERE status='pending'";
-$result = $conn->query($sql);
-if ($result && $result->num_rows > 0) {
-    $row = $result->fetch_assoc();
-    $pending_bookings = $row['pending_bookings'];
-}
+// Function to get service price
+function getServicePrice($service_type, $vehicle_type) {
+    // Basic pricing structure
+    $prices = [
+        'basic_wash' => [
+            'Sedan' => 400,
+            'SUV' => 500,
+            'Hatchback' => 350
+        ],
+        'basic_interior' => [
+            'Sedan' => 600,
+            'SUV' => 700,
+            'Hatchback' => 500
+        ],
+        'exterior_washing' => [
+            'Sedan' => 800,
+            'SUV' => 1000,
+            'Hatchback' => 700
+        ],
+        'interior_washing' => [
+            'Sedan' => 1000,
+            'SUV' => 1200,
+            'Hatchback' => 900
+        ]
+    ];
 
-// Completed bookings
-$completed_bookings = 0;
-$sql = "SELECT COUNT(*) as completed_bookings FROM booking WHERE status='completed'";
-$result = $conn->query($sql);
-if ($result && $result->num_rows > 0) {
-    $row = $result->fetch_assoc();
-    $completed_bookings = $row['completed_bookings'];
+    return $prices[$service_type][$vehicle_type] ?? 0;
 }
-
-// Today's bookings
-$today_bookings = 0;
-$sql = "SELECT COUNT(*) as today_bookings FROM booking WHERE DATE(booking_date) = CURDATE()";
-$result = $conn->query($sql);
-if ($result && $result->num_rows > 0) {
-    $row = $result->fetch_assoc();
-    $today_bookings = $row['today_bookings'];
-}
-
 ?>
 
 <!DOCTYPE html>
@@ -66,7 +117,7 @@ if ($result && $result->num_rows > 0) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Car Wash Admin Dashboard</title>
+    <title>Payment Details - Car Wash Admin</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
@@ -214,7 +265,7 @@ if ($result && $result->num_rows > 0) {
             color: var(--text-dark);
         }
 
-        /* Bookings Table */
+        /* Table Styles */
         .bookings-section {
             background: var(--white);
             padding: 20px;
@@ -234,23 +285,6 @@ if ($result && $result->num_rows > 0) {
         .table-title {
             font-size: 18px;
             color: var(--text-dark);
-        }
-
-        .add-button {
-            background-color: var(--primary-color);
-            color: var(--white);
-            padding: 8px 16px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: background-color 0.3s ease;
-        }
-
-        .add-button:hover {
-            background-color: var(--secondary-color);
         }
 
         .bookings-table {
@@ -274,12 +308,17 @@ if ($result && $result->num_rows > 0) {
             font-size: 14px;
         }
 
-        .status-badge {
+        /* Payment Status Styles */
+        .payment-status {
             padding: 6px 12px;
             border-radius: 20px;
             font-size: 12px;
             font-weight: 500;
-            text-transform: capitalize;
+        }
+
+        .status-success {
+            background-color: #d4edda;
+            color: #155724;
         }
 
         .status-pending {
@@ -287,39 +326,21 @@ if ($result && $result->num_rows > 0) {
             color: #856404;
         }
 
-        .status-completed {
-            background-color: #d4edda;
-            color: #155724;
+        .status-failed {
+            background-color: #f8d7da;
+            color: #721c24;
         }
 
-        .actions {
-            display: flex;
-            gap: 8px;
+        .amount {
+            font-weight: bold;
+            color: #2d3436;
         }
 
-        .action-btn {
-            padding: 6px 12px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            transition: opacity 0.3s ease;
-        }
-
-        .action-btn:hover {
-            opacity: 0.8;
-        }
-
-        .edit-btn {
-            background-color: #4CAF50;
-            color: white;
-        }
-
-        .delete-btn {
-            background-color: #f44336;
+        /* Remove underline from all navigation links */
+        .nav-menu a,
+        .nav-item a,
+        a.nav-item {
+            text-decoration: none;
             color: white;
         }
 
@@ -367,19 +388,11 @@ if ($result && $result->num_rows > 0) {
                 overflow-x: auto;
             }
         }
-
-        /* Remove underline from all navigation links */
-        .nav-menu a,
-        .nav-item a,
-        a.nav-item {
-            text-decoration: none;
-            color: white;
-        }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- Sidebar -->
+        <!-- Copy the sidebar from admindash.php -->
         <div class="sidebar">
             <div class="logo">
                 <i class="fas fa-car-wash"></i>
@@ -392,33 +405,25 @@ if ($result && $result->num_rows > 0) {
                         <i class="fas fa-home"></i>
                         <span>Home</span>
                     </a>
-                    <div class="nav-item active">
+                    <a href="admindash.php" class="nav-item">
                         <i class="fas fa-tachometer-alt"></i>
                         <span>Dashboard</span>
-                    </div>
+                    </a>
                     <a href="bookings.php" class="nav-item">
                         <i class="fas fa-calendar-alt"></i>
                         <span>Bookings</span>
                     </a>
-                    <a href="payment_details.php" class="nav-item">
+                    <a href="payment_details.php" class="nav-item active">
                         <i class="fas fa-calendar-alt"></i>
                         <span>Payment Details</span>
                     </a>
                 </div>
                 <div class="nav-section">
                     <div class="nav-section-title">Management</div>
-                    <!-- <a href="customers.php"><div class="nav-item">
-                        <i class="fas fa-users"></i>
-                        <span>Customers</span>
-                    </div></a> -->
                     <a href="staff.php" class="nav-item">
                         <i class="fas fa-user-tie"></i>
                         <span>Staff Management</span>
                     </a>
-                    <!-- <a href="enquiries.php" class="nav-item">
-                        <i class="fas fa-message"></i>
-                        <span>Enquiries</span>
-                    </a> -->
                 </div>
                 <div class="nav-section">
                     <div class="nav-section-title">Settings</div>
@@ -428,43 +433,38 @@ if ($result && $result->num_rows > 0) {
                     </a>
                 </div>
             </div>
-        </div>  
+        </div>
 
-        <!-- Main Content -->
         <div class="main-content">
             <div class="header">
-                <h1 class="page-title">Dashboard Overview</h1>
+                <h1 class="page-title">Payment Details</h1>
                 <div class="date"><?php echo date('F d, Y'); ?></div>
             </div>
 
-            <!-- Stats Cards -->
+            <!-- Payment Stats -->
             <div class="stats-container">
                 <div class="stat-card">
-                    <h3>Total Bookings</h3>
-                    <div class="value"><?php echo $total_bookings; ?></div>
+                    <h3>Total Payments</h3>
+                    <div class="value"><?php echo $total_payments; ?></div>
                 </div>
                 <div class="stat-card">
-                    <h3>Pending Bookings</h3>
-                    <div class="value"><?php echo $pending_bookings; ?></div>
+                    <h3>Total Amount</h3>
+                    <div class="value">₹<?php echo number_format($total_amount, 2); ?></div>
                 </div>
                 <div class="stat-card">
-                    <h3>Completed Bookings</h3>
-                    <div class="value"><?php echo $completed_bookings; ?></div>
+                    <h3>Today's Payments</h3>
+                    <div class="value"><?php echo $today_payments; ?></div>
                 </div>
                 <div class="stat-card">
-                    <h3>Enquiries</h3>
-                    <div class="value"><?php echo $contact_messages; ?></div>
+                    <h3>Today's Amount</h3>
+                    <div class="value">₹<?php echo number_format($today_amount, 2); ?></div>
                 </div>
             </div>
 
-            <!-- Bookings Table -->
+            <!-- Payments Table -->
             <div class="bookings-section">
                 <div class="table-header">
-                    <h2 class="table-title">Recent Bookings</h2>
-                    <!-- <button class="add-button"  >
-                        <i class="fas fa-plus"></i>
-                        <span>Add New Booking</span>
-                    </button> -->
+                    <h2 class="table-title">All Payments</h2>
                 </div>
                 <table class="bookings-table">
                     <thead>
@@ -474,29 +474,62 @@ if ($result && $result->num_rows > 0) {
                             <th>Service Type</th>
                             <th>Vehicle Type</th>
                             <th>Date & Time</th>
-                            <th>Vehicle Number</th>
-                            <th>Special Requests</th>
+                            <th>Amount</th>
+                            <th>Payment Status</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php
-                        $query = "SELECT * FROM booking ORDER BY booking_date DESC, booking_time DESC LIMIT 10";
+                        $query = "SELECT b.*, 
+                        CASE 
+                            WHEN b.payment_amount IS NOT NULL AND b.payment_amount > 0 THEN b.payment_amount 
+                            ELSE CASE b.service_type
+                                WHEN 'basic_wash' THEN (CASE b.vehicle_type 
+                                    WHEN 'Sedan' THEN 400 
+                                    WHEN 'SUV' THEN 500 
+                                    WHEN 'Hatchback' THEN 350 END)
+                                WHEN 'basic_interior' THEN (CASE b.vehicle_type 
+                                    WHEN 'Sedan' THEN 600 
+                                    WHEN 'SUV' THEN 700 
+                                    WHEN 'Hatchback' THEN 500 END)
+                                WHEN 'exterior_washing' THEN (CASE b.vehicle_type 
+                                    WHEN 'Sedan' THEN 800 
+                                    WHEN 'SUV' THEN 1000 
+                                    WHEN 'Hatchback' THEN 700 END)
+                                WHEN 'interior_washing' THEN (CASE b.vehicle_type 
+                                    WHEN 'Sedan' THEN 1000 
+                                    WHEN 'SUV' THEN 1200 
+                                    WHEN 'Hatchback' THEN 900 END)
+                            END END as calculated_amount,
+                        COALESCE(b.payment_status, 'pending') as payment_status
+                        FROM booking b 
+                        WHERE b.payment_status IS NOT NULL 
+                        ORDER BY b.payment_date DESC, b.created_at DESC";
                         $result = $conn->query($query);
 
                         if ($result && $result->num_rows > 0) {
                             while($row = $result->fetch_assoc()) {
+                                $status_class = match(strtolower($row['payment_status'])) {
+                                    'completed' => 'status-success',
+                                    'pending' => 'status-pending',
+                                    'failed' => 'status-failed',
+                                    default => 'status-pending'
+                                };
+                                
+                                $amount = $row['calculated_amount'];
+                                
                                 echo "<tr>
                                     <td>#{$row['id']}</td>
                                     <td>{$row['username']}</td>
                                     <td>{$row['service_type']}</td>
                                     <td>{$row['vehicle_type']}</td>
                                     <td>" . date('M d, Y h:i A', strtotime($row['booking_date'] . ' ' . $row['booking_time'])) . "</td>
-                                    <td>{$row['vehicle_number']}</td>
-                                    <td>{$row['special_requests']}</td>
+                                    <td class='amount'>₹" . number_format($amount, 2) . "</td>
+                                    <td><span class='payment-status {$status_class}'>" . ucfirst($row['payment_status']) . "</span></td>
                                 </tr>";
                             }
                         } else {
-                            echo "<tr><td colspan='7' style='text-align: center;'>No bookings found</td></tr>";
+                            echo "<tr><td colspan='7' style='text-align: center;'>No payments found</td></tr>";
                         }
                         ?>
                     </tbody>
@@ -506,38 +539,16 @@ if ($result && $result->num_rows > 0) {
     </div>
 
     <script>
-    // Add active class to nav items
-    document.querySelectorAll('.nav-item').forEach(item => {
-        item.addEventListener('click', function() {
-            // Remove active class from current active item
-            document.querySelector('.nav-item.active').classList.remove('active');
-            // Add active class to clicked item
-            this.classList.add('active');
+        // Add active class to current nav item
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentPage = 'payment_details.php';
+            document.querySelectorAll('.nav-item').forEach(item => {
+                if (item.getAttribute('href') === currentPage) {
+                    document.querySelector('.nav-item.active')?.classList.remove('active');
+                    item.classList.add('active');
+                }
+            });
         });
-    });
-
-    // Delete booking confirmation
-    document.querySelectorAll('.delete-btn').forEach(btn => {
-        btn.addEventListener('click', function(e) {
-            if(confirm('Are you sure you want to delete this booking?')) {
-                const bookingId = this.closest('tr').querySelector('td:first-child').textContent.replace('#', '');
-                window.location.href = `delete_booking.php?id=${bookingId}`;
-            }
-        });
-    });
-
-    // Edit booking redirect
-    document.querySelectorAll('.edit-btn').forEach(btn => {
-        btn.addEventListener('click', function(e) {
-            const bookingId = this.closest('tr').querySelector('td:first-child').textContent.replace('#', '');
-            window.location.href = `edit_booking.php?id=${bookingId}`;
-        });
-    });
-
-    // Add new booking redirect
-    document.querySelector('.add-button').addEventListener('click', function() {
-        window.location.href = 'booking.php';
-    });
-</script>
+    </script>
 </body>
-</html>
+</html> 
