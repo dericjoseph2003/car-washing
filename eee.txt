@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Wash Admin Dashboard</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary-color: #1e3c72;
+            --white: #ffffff;
+            --gray-light: #f5f5f5;
+            --gray: #e0e0e0;
+        }
+
+        body {
+            background-color: var(--gray-light);
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: var(--primary-color);
+            color: var(--white);
+            padding: 20px;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 20px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .recent-bookings {
+            background-color: var(--white);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .booking-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .booking-table th,
+        .booking-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--gray);
+        }
+
+        .status.pending {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+
+        .status.completed {
+            background-color: #d4edda;
+            color: #155724;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <div class="logo">CW</div>
+            <nav>
+                <div class="nav-item">Dashboard</div>
+                <div class="nav-item active">Bookings</div>
+            </nav>
+        </div>
+
+        <div class="main-content">
+            <div class="header">
+                <h1>Booking Management</h1>
+            </div>
+
+            <div class="recent-bookings">
+                <h3>Recent Bookings</h3>
+                <table class="booking-table">
+                    <thead>
+                        <tr>
+                            <th>Booking ID</th>
+                            <th>Customer</th>
+                            <th>Service Type</th>
+                            <th>Vehicle Type</th>
+                            <th>Booking Date</th>
+                            <th>Booking Time</th>
+                            <th>Vehicle Number</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php
+                        include 'conn.php';
+                        $query = "SELECT id, username, service_type, vehicle_type, booking_date, booking_time, vehicle_number, status FROM bookings ORDER BY booking_date ASC, booking_time ASC";
+                        $result = $conn->query($query);
+                        if ($result && $result->num_rows > 0) {
+                            while ($row = $result->fetch_assoc()) {
+                                echo "<tr>";
+                                echo "<td>{$row['id']}</td>";
+                                echo "<td>{$row['username']}</td>";
+                                echo "<td>{$row['service_type']}</td>";
+                                echo "<td>{$row['vehicle_type']}</td>";
+                                echo "<td>" . date("M d, Y", strtotime($row['booking_date'])) . "</td>";
+                                echo "<td>" . date("h:i A", strtotime($row['booking_time'])) . "</td>";
+                                echo "<td>{$row['vehicle_number']}</td>";
+                                echo "<td class='status {$row['status']}'>{$row['status']}</td>";
+                                echo "<td><button>Update</button> <button>Delete</button></td>";
+                                echo "</tr>";
+                            }
+                        } else {
+                            echo "<tr><td colspan='9'>No bookings available.</td></tr>";
+                        }
+                        ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
